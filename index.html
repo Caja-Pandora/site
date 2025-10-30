@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>La Caja de Pandora | Belleza & Moda</title>
+  <meta name="description" content="Tienda de moda y belleza: ropa femenina casual, lencería, joyas y accesorios, perfumes y fragancias, maquillaje, kits de belleza, bolsos y carteras." />
+  <!-- Linked external stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-app="store">
+  <!-- Top bar -->
+  <div class="topbar">
+    <div class="container row">
+      <div>🚚 Envíos gratis a partir de $999 MXN</div>
+      <div>↩️ Cambios y devoluciones fáciles</div>
+      <div>💬 Soporte por WhatsApp</div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="container head">
+      <div class="brand">
+        <img src="img/logo.png" alt="La Caja de Pandora" class="logo">
+        <span class="brand-text">La Caja de Pandora</span>
+      </div>
+      
+      <form class="search" role="search" aria-label="Buscar productos">
+        <input type="search" placeholder="Buscar: labial, bolso, vestido..."/>
+        <button type="submit">Buscar</button>
+      </form>
+      <div class="icons">
+        <!-- Made favorites button functional -->
+        <div class="ic" id="favoritesBtn">❤️ Favoritos</div>
+        <div class="ic">🛒 Carrito <b id="cartCount">0</b></div>
+      </div>
+    </div>
+    <nav>
+      <div class="container menu">
+        <a href="#ropa">Ropa femenina</a>
+        <a href="#lenceria">Ropa interior</a>
+        <a href="#joyas">Joyas & accesorios</a>
+        <a href="#perfumes">Perfumes y fragancias</a>
+        <a href="#maquillaje">Maquillaje</a>
+        <a href="#kits">Kits de belleza</a>
+        <a href="#bolsos">Bolsos y carteras</a>
+        <a href="#ofertas">Ofertas</a>
+      </div>
+    </nav>
+  </header>
+  
+  <!-- Hero -->
+  <section class="hero" id="inicio">
+    <div class="container">
+      <div class="wrap">
+        <div class="hero-content">
+          <span class="badge">✨ Nueva colección Primavera</span>
+          <h1>Todo para tu estilo: belleza, moda y accesorios</h1>
+          <!-- Added slogan -->
+          <p class="slogan">Porque abrir la caja de pandora nunca fue tan bueno</p>
+          <p>Descubre productos seleccionados para ti: desde básicos diarios hasta sets premium. Compra seguro, recibe rápido.</p>
+          <div class="cta">
+            <a class="btn" href="#maquillaje">Comprar maquillaje</a>
+            <a class="btn secondary" href="#ofertas">Ver ofertas</a>
+          </div>
+        </div>
+      </div>
+      <div class="trust container">
+        <div class="t">🚚 Envío en 24-72h</div>
+        <div class="t">🔒 Pago seguro</div>
+        <div class="t">⭐ 4.9/5 reseñas</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Catálogo dinámico -->
+  <section id="catalogo">
+    <div class="container">
+      <h2 id="catalogTitle">Productos destacados</h2>
+      <p class="sub" id="catalogSub">Explora por categoría o usa el buscador.</p>
+      <div class="grid" id="productGrid"></div>
+      <div id="emptyState" class="sub" style="display:none">No encontramos resultados. Prueba con otro término o categoría.</div>
+    </div>
+  </section>
+
+  <!-- Newsletter / CTA -->
+  <section>
+    <div class="container newsletter">
+      <h3>Únete y recibe 10% OFF en tu primera compra</h3>
+      <form class="search" onsubmit="event.preventDefault(); this.nextElementSibling.textContent='¡Listo! Revisa tu correo 📩'; this.reset();">
+        <input type="email" placeholder="Tu correo" required>
+        <button type="submit">Suscribirme</button>
+      </form>
+      <p class="sub" id="subMsg"></p>
+    </div>
+  </section>
+
+  <!-- Added Product Modal -->
+  <div class="product-modal" id="productModal">
+    <div class="product-modal-backdrop"></div>
+    <div class="product-modal-content">
+      <button class="product-modal-close" id="closeModal">✕</button>
+      <div class="product-modal-image">
+        <img id="modalImage" src="/placeholder.svg" alt="">
+      </div>
+      <div class="product-modal-details">
+        <span class="product-modal-category" id="modalCategory"></span>
+        <h2 class="product-modal-title" id="modalTitle"></h2>
+        <div class="product-modal-price" id="modalPrice"></div>
+        <p class="product-modal-description" id="modalDescription"></p>
+        <ul class="product-modal-features" id="modalFeatures"></ul>
+        <div class="product-modal-actions">
+          <button class="btn" id="modalAddToCart" style="flex:1">Añadir al carrito</button>
+          <button class="btn secondary" id="modalClose2">Seguir comprando</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cart Drawer -->
+  <div id="cartDrawer" aria-hidden="true" style="position:fixed;inset:0 0 0 auto;width:min(420px,100%);background:#fff;border-left:1px solid var(--hair);box-shadow:var(--shadow);transform:translateX(100%);transition:.3s;display:grid;grid-template-rows:auto 1fr auto;z-index:60">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--hair)">
+      <strong>Tu carrito</strong>
+      <button id="closeCart" class="btn secondary">Cerrar</button>
+    </div>
+    <div id="cartItems" style="overflow:auto;padding:10px"></div>
+    <div style="border-top:1px solid var(--hair);padding:14px 16px;display:grid;gap:8px">
+      <div style="display:flex;justify-content:space-between"><span>Subtotal</span><strong id="cartSubtotal">$0</strong></div>
+      <button id="goCheckout" class="btn">Ir a pagar</button>
+    </div>
+  </div>
+  <div id="backdrop" style="position:fixed;inset:0;background:rgba(2,6,23,.45);backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:.3s;z-index:50"></div>
+
+  <!-- Redesigned Checkout Modal - fixed layout without scrolling -->
+  <!-- Added X button to close checkout modal -->
+  <dialog id="checkout" style="width:min(900px,95vw);max-height:90vh;border:0;border-radius:24px;box-shadow:var(--shadow-xl);padding:0;overflow:hidden">
+    <button class="product-modal-close" id="closeCheckout" style="position:absolute;top:20px;right:20px;z-index:100">✕</button>
+    <form method="dialog" id="checkoutForm" style="display:grid;grid-template-columns:1.3fr 1fr;gap:0;height:100%">
+      <div style="padding:32px;overflow-y:auto;max-height:90vh">
+        <h3 style="margin:0 0 8px;font-size:28px;font-weight:800">Finaliza tu compra</h3>
+        <p class="sub" style="margin:0 0 24px">Simulación segura (no se cobra nada).</p>
+        
+        <h4 style="margin:20px 0 12px;font-size:16px;font-weight:700">Datos de envío</h4>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <input required name="nombre" placeholder="Nombre" style="padding:12px;border:1px solid var(--hair);border-radius:var(--radius-sm);font-size:14px"/>
+          <input required name="apellidos" placeholder="Apellidos" style="padding:12px;border:1px solid var(--hair);border-radius:var(--radius-sm);font-size:14px"/>
+          <input required name="telefono" placeholder="WhatsApp" pattern="[0-9]{10}" title="Ingresa un número de 10 dígitos" style="padding:12px;border:1px solid var(--hair);border-radius:var(--radius-sm);font-size:14px"/>
+          <input required name="email" type="email" placeholder="Correo" style="padding:12px;border:1px solid var(--hair);border-radius:var(--radius-sm);font-size:14px"/>
+          <input required name="direccion" placeholder="Calle y número" style="grid-column:1/3;padding:12px;border:1px solid var(--hair);border-radius:var(--radius-sm);font-size:14px"/>
+          <input required name="ciudad" placeholder="Ciudad" style="padding:12px;border:1px solid var(--hair);border-radius:var(--radius-sm);font-size:14px"/>
+          <input required name="cp" placeholder="C.P." pattern="[0-9]{5}" title="Ingresa un código postal de 5 dígitos" style="padding:12px;border:1px solid var(--hair);border-radius:var(--radius-sm);font-size:14px"/>
+        </div>
+        
+        <h4 style="margin:24px 0 12px;font-size:16px;font-weight:700">Método de pago</h4>
+        <div style="display:grid;gap:12px">
+          <label style="display:flex;gap:10px;align-items:center;padding:12px;border:1px solid var(--hair);border-radius:var(--radius-sm);cursor:pointer;transition:all 0.2s">
+            <input type="radio" name="metodo" value="card" checked style="accent-color:var(--brand)"/> 
+            <span style="font-weight:500">💳 Tarjeta (simulada)</span>
+          </label>
+          <label style="display:flex;gap:10px;align-items:center;padding:12px;border:1px solid var(--hair);border-radius:var(--radius-sm);cursor:pointer;transition:all 0.2s">
+            <input type="radio" name="metodo" value="oxxo" style="accent-color:var(--brand)"/> 
+            <span style="font-weight:500">🏪 OXXO Pay (simulada)</span>
+          </label>
+        </div>
+        
+        <div id="cardFields" style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;margin-top:16px">
+          <input placeholder="Número de tarjeta" value="4111 1111 1111 1111" pattern="[0-9\s]{13,19}" title="Ingresa un número de tarjeta válido" style="padding:12px;border:1px solid var(--hair);border-radius:var(--radius-sm);font-size:14px"/>
+          <input placeholder="MM/AA" value="12/29" pattern="(0[1-9]|1[0-2])\/[0-9]{2}" title="Formato: MM/AA" style="padding:12px;border:1px solid var(--hair);border-radius:var(--radius-sm);font-size:14px"/>
+          <input placeholder="CVC" value="123" pattern="[0-9]{3,4}" title="Ingresa 3 o 4 dígitos" style="padding:12px;border:1px solid var(--hair);border-radius:var(--radius-sm);font-size:14px"/>
+        </div>
+        <p class="sub" id="chkMsg" style="margin-top:16px;min-height:24px"></p>
+      </div>
+      
+      <aside style="background:var(--gradient-soft);padding:32px;border-left:1px solid var(--hair);display:flex;flex-direction:column;overflow-y:auto;max-height:90vh">
+        <h4 style="margin:0 0 20px;font-size:20px;font-weight:800">Resumen del pedido</h4>
+        <div id="summary" style="flex:1;overflow-y:auto;margin-bottom:20px"></div>
+        <hr style="border:none;border-top:2px solid var(--hair);margin:16px 0"/>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+          <span style="font-size:18px;font-weight:700">Total</span>
+          <strong id="sumTotal" style="font-size:28px;font-weight:900;background:var(--gradient-brand);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">$0</strong>
+        </div>
+        <button class="btn" id="payBtn" type="button" style="width:100%;margin-bottom:10px">Pagar ahora</button>
+        <button class="btn secondary" value="cancel" style="width:100%">Seguir comprando</button>
+      </aside>
+    </form>
+  </dialog>
+
+  <footer>
+    <div class="container">
+      <div class="grid" style="grid-template-columns:repeat(4,1fr);gap:20px">
+        <div>
+          <strong>La Caja de Pandora</strong>
+          <p>Tienda de belleza y moda hecha con ❤ en Michoacán.</p>
+        </div>
+        <div>
+          <strong>Categorías</strong>
+          <ul style="list-style:none;padding:0;margin:8px 0;color:#cbd5e1">
+            <li><a data-cat="maquillaje" href="#catalogo">Maquillaje</a></li>
+            <li><a data-cat="perfumes" href="#catalogo">Perfumes</a></li>
+            <li><a data-cat="joyas" href="#catalogo">Joyas</a></li>
+            <li><a data-cat="bolsos" href="#catalogo">Bolsos</a></li>
+          </ul>
+        </div>
+        <div>
+          <strong>Ayuda</strong>
+          <ul style="list-style:none;padding:0;margin:8px 0;color:#cbd5e1">
+            <li>Envíos y devoluciones</li>
+            <li>Pagos</li>
+            <li>Preguntas frecuentes</li>
+          </ul>
+        </div>
+        <div>
+          <strong>Contacto</strong>
+          <p>WhatsApp: 55 0000 0000<br/>Email: hola@lacajadepandora.mx</p>
+        </div>
+      </div>
+      <p style="margin-top:20px;color:#94a3b8">© <span id="year"></span> La Caja de Pandora</p>
+    </div>
+  </footer>
+
+<script>
+(function(){
+  // Año footer
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  const products = [
+    {
+      sku:'MK-001', 
+      name:'Base líquida HD 30ml', 
+      price:289, 
+      compare:349, 
+      cat:'maquillaje',
+      img:'img/base.png',
+      desc:'Base de maquillaje de alta definición con cobertura media a completa. Fórmula ligera que se adapta a tu tono de piel.',
+      features:['Cobertura HD', 'Larga duración 12h', 'No comedogénico', 'SPF 15']
+    },
+    {
+      sku:'MK-002', 
+      name:'Labial mate larga duración', 
+      price:159, 
+      cat:'maquillaje',
+      img:'img/labial.png',
+      desc:'Labial con acabado mate intenso y fórmula de larga duración. No reseca los labios gracias a su contenido de vitamina E.',
+      features:['Acabado mate', 'Hasta 8h de duración', 'Con vitamina E', 'Colores intensos']
+    },
+    {
+      sku:'MK-003',
+      name:'Rubor compacto',
+      price:189,
+      cat:'maquillaje',
+      img:'img/rubor.png',
+      desc:'Rubor en polvo compacto con pigmentación intensa y acabado natural. Fácil de difuminar para un look fresco.',
+      features:['Pigmentación alta', 'Acabado natural', 'Fácil de aplicar', 'Incluye espejo']
+    },
+    {
+      sku:'PR-017', 
+      name:'Perfume Blossom EDP 50ml', 
+      price:799, 
+      cat:'perfumes',
+      img:'img/perf1.png',
+      desc:'Eau de Parfum floral con notas de jazmín, rosa y vainilla. Fragancia elegante y sofisticada para toda ocasión.',
+      features:['Notas florales', 'Larga duración', '50ml', 'Frasco elegante']
+    },
+    {
+      sku:'PR-021', 
+      name:'Fragancia Velvet EDT 90ml', 
+      price:649, 
+      compare:729, 
+      cat:'perfumes',
+      img:'img/p1.png',
+      desc:'Eau de Toilette con notas amaderadas y cítricas. Perfecta para el día a día con un toque de frescura.',
+      features:['Notas cítricas', 'Aroma fresco', '90ml', 'Ideal para diario']
+    },
+    {
+      sku:'AC-102', 
+      name:'Collar minimalista dorado', 
+      price:199, 
+      cat:'joyas',
+      img:'img/collar.png',
+      desc:'Collar delicado con diseño minimalista en acabado dorado. Perfecto para complementar cualquier outfit.',
+      features:['Acero inoxidable', 'Baño de oro', 'Hipoalergénico', 'Ajustable']
+    },
+    {
+      sku:'AC-221', 
+      name:'Aretes perla clásica', 
+      price:149, 
+      cat:'joyas',
+      img:'img/aretes.png',
+      desc:'Aretes elegantes con perlas sintéticas de alta calidad. Diseño clásico que nunca pasa de moda.',
+      features:['Perlas sintéticas', 'Base de plata', 'Cierre seguro', 'Elegantes']
+    },
+    {
+      sku:'BG-055', 
+      name:'Bolso tote cuero vegano', 
+      price:649, 
+      compare:729, 
+      cat:'bolsos',
+      img:'img/bolso-tote.png',
+      desc:'Bolso espacioso de cuero vegano con múltiples compartimentos. Ideal para el trabajo o uso diario.',
+      features:['Cuero vegano', 'Espacioso', 'Varios compartimentos', 'Resistente']
+    },
+    {
+      sku:'BG-072', 
+      name:'Cartera compacta minimal', 
+      price:239, 
+      cat:'bolsos',
+      img:'img/cartera.png',
+      desc:'Cartera compacta con diseño minimalista. Perfecta para llevar lo esencial con estilo.',
+      features:['Diseño compacto', 'Múltiples ranuras', 'Cierre seguro', 'Elegante']
+    },
+    {
+      sku:'RO-310', 
+      name:'Blusa satinada', 
+      price:329, 
+      cat:'ropa',
+      img:'img/blusa.png',
+      desc:'Blusa elegante de satín con caída fluida. Perfecta para ocasiones especiales o looks casuales elegantes.',
+      features:['Tela satinada', 'Corte elegante', 'Varias tallas', 'Fácil de combinar']
+    },
+    {
+      sku:'RO-411', 
+      name:'Jeans mom fit', 
+      price:559, 
+      cat:'ropa',
+      img:'img/jeans.png',
+      desc:'Jeans de corte mom fit de mezclilla premium. Cómodos y versátiles para cualquier ocasión.',
+      features:['Corte mom fit', 'Mezclilla premium', 'Cómodos', 'Tallas 24-34']
+    },
+    {
+      sku:'LN-501', 
+      name:'Set lencería encaje', 
+      price:499, 
+      cat:'lenceria',
+      img:'img/lenceria.png',
+      desc:'Conjunto de lencería con detalles de encaje delicado. Elegante y cómodo para sentirte especial.',
+      features:['Encaje delicado', 'Cómodo', 'Varias tallas', 'Incluye 2 piezas']
+    },
+    {
+      sku:'KT-601', 
+      name:'Kit de belleza facial', 
+      price:399, 
+      cat:'kits',
+      img:'img/kit-belleza.png',
+      desc:'Kit completo de cuidado facial con limpiador, tónico, serum y crema hidratante. Todo lo que necesitas en un solo pack.',
+      features:['4 productos', 'Rutina completa', 'Para todo tipo de piel', 'Empaque de regalo']
+    },
+  ];
+
+  // ====== Estado ======
+  const grid = document.getElementById('productGrid');
+  const emptyState = document.getElementById('emptyState');
+  const title = document.getElementById('catalogTitle');
+  const sub = document.getElementById('catalogSub');
+  const count = document.getElementById('cartCount');
+  let cart = JSON.parse(localStorage.getItem('cart_v1')||'{}');
+  let favorites = JSON.parse(localStorage.getItem('favorites_v1')||'[]');
+  let currentProduct = null;
+
+  function saveCart(){ localStorage.setItem('cart_v1', JSON.stringify(cart)); refreshCartIcon(); }
+  function refreshCartIcon(){
+    const total = Object.values(cart).reduce((a,b)=>a+b,0);
+    count.textContent = total;
+  }
+  
+  function saveFavorites(){ localStorage.setItem('favorites_v1', JSON.stringify(favorites)); }
+  function toggleFavorite(sku){
+    const idx = favorites.indexOf(sku);
+    if(idx > -1) favorites.splice(idx, 1);
+    else favorites.push(sku);
+    saveFavorites();
+  }
+  function isFavorite(sku){ return favorites.includes(sku); }
+
+  function isCartEmpty(){
+    return Object.keys(cart).length === 0;
+  }
+
+  function showError(message){
+    const msg = document.getElementById('chkMsg');
+    if(msg){
+      msg.textContent = message;
+      msg.style.color = 'var(--brand)';
+      setTimeout(() => {
+        msg.textContent = '';
+        msg.style.color = '';
+      }, 4000);
+    }
+  }
+
+  const modal = document.getElementById('productModal');
+  const closeModalBtn = document.getElementById('closeModal');
+  const closeModal2Btn = document.getElementById('modalClose2');
+  const modalAddToCartBtn = document.getElementById('modalAddToCart');
+
+  function openProductModal(product) {
+    currentProduct = product;
+    document.getElementById('modalImage').src = product.img;
+    document.getElementById('modalImage').alt = product.name;
+    document.getElementById('modalCategory').textContent = labelCat(product.cat);
+    document.getElementById('modalTitle').textContent = product.name;
+    document.getElementById('modalPrice').innerHTML = money(product.price) + (product.compare ? ` <span class="old" style="font-size:20px">${money(product.compare)}</span>` : '');
+    document.getElementById('modalDescription').textContent = product.desc || 'Producto de alta calidad seleccionado especialmente para ti.';
+    
+    const featuresList = document.getElementById('modalFeatures');
+    featuresList.innerHTML = '';
+    if(product.features && product.features.length) {
+      product.features.forEach(feature => {
+        const li = document.createElement('li');
+        li.textContent = feature;
+        featuresList.appendChild(li);
+      });
+    }
+    
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeProductModal() {
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+    currentProduct = null;
+  }
+
+  closeModalBtn.addEventListener('click', closeProductModal);
+  closeModal2Btn.addEventListener('click', closeProductModal);
+  modal.querySelector('.product-modal-backdrop').addEventListener('click', closeProductModal);
+  
+  modalAddToCartBtn.addEventListener('click', () => {
+    if(currentProduct) {
+      cart[currentProduct.sku] = (cart[currentProduct.sku]||0)+1;
+      saveCart();
+      closeProductModal();
+      openCart();
+    }
+  });
+
+  // ====== Render catálogo ======
+  function money(n){ return `$${n.toLocaleString('es-MX')}`; }
+  function productCard(p){
+    const hasCompare = p.compare && p.compare>p.price;
+    const heartFilled = isFavorite(p.sku);
+    return `<article class="card" data-sku="${p.sku}">
+      <div class="pic">
+        <img src="${p.img}" alt="${p.name}" />
+        <button class="favorite-btn ${heartFilled?'active':''}" data-sku="${p.sku}" aria-label="Agregar a favoritos">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="${heartFilled?'#FF0080':'none'}" stroke="${heartFilled?'#FF0080':'currentColor'}" stroke-width="2">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="body">
+        <strong>${p.name}</strong>
+        <span class="price">${money(p.price)} ${hasCompare?`<span class="old">${money(p.compare)}</span>`:''}</span>
+        <small class="sub">${labelCat(p.cat)}</small>
+        <div class="add"><button class="btnAdd btn">Añadir al carrito</button></div>
+      </div>
+    </article>`
+  }
+  function labelCat(c){
+    return ({maquillaje:'Maquillaje', perfumes:'Perfumes y fragancias', joyas:'Joyas & accesorios', bolsos:'Bolsos y carteras', ropa:'Ropa femenina', lenceria:'Ropa interior', kits:'Kits de belleza'})[c]||c
+  }
+  function render(cat, query, showFavorites){
+    let data = products.slice();
+    
+    if(showFavorites){
+      data = data.filter(p=>isFavorite(p.sku));
+      title.textContent = 'Mis Favoritos';
+      sub.textContent = 'Productos que te encantan ❤️';
+    }
+    else if(cat && cat!=='todos'){ 
+      data = data.filter(p=>p.cat===cat); 
+      title.textContent = labelCat(cat); 
+      sub.textContent = 'Explora y añade al carrito.'; 
+    }
+    else { 
+      title.textContent='Productos destacados'; 
+      sub.textContent='Explora por categoría o usa el buscador.'; 
+    }
+    
+    if(query){ 
+      const q=query.toLowerCase(); 
+      data = data.filter(p=>p.name.toLowerCase().includes(q)); 
+      title.textContent = `Resultados para \"${query}\"`; 
+    }
+    
+    grid.innerHTML = data.map(productCard).join('');
+    emptyState.style.display = data.length? 'none':'block';
+    
+    grid.querySelectorAll('.card').forEach(card=>{
+      const sku = card.dataset.sku;
+      const product = products.find(p=>p.sku===sku);
+      
+      const favBtn = card.querySelector('.favorite-btn');
+      favBtn.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        toggleFavorite(sku);
+        render(cat, query, showFavorites);
+      });
+      
+      card.addEventListener('click', (e) => {
+        if(!e.target.classList.contains('btnAdd') && !e.target.closest('.favorite-btn')) {
+          openProductModal(product);
+        }
+      });
+      
+      card.querySelector('.btnAdd').addEventListener('click', e=>{
+        e.stopPropagation();
+        cart[sku] = (cart[sku]||0)+1; 
+        saveCart(); 
+        openCart();
+      });
+    });
+  }
+
+  // Inicial: destacados
+  render(); refreshCartIcon();
+
+  // ====== Búsqueda ======
+  document.querySelector('form.search')?.addEventListener('submit', (e)=>{
+    e.preventDefault();
+    const term = e.target.querySelector('input').value.trim();
+    render('todos', term, false);
+    location.hash = '#catalogo';
+  });
+
+  document.getElementById('favoritesBtn').addEventListener('click', ()=>{
+    render(null, null, true);
+    location.hash = '#catalogo';
+  });
+
+  // ====== Navegación por categorías ======
+  const catMap = ['maquillaje','perfumes','joyas','bolsos','ropa','lenceria','kits'];
+  catMap.forEach(c=>{
+    document.querySelectorAll(`[href="#${c}"]`).forEach(a=>a.addEventListener('click',()=>{ render(c, null, false); }));
+    document.querySelectorAll(`[data-cat="${c}"]`).forEach(a=>a.addEventListener('click',()=>{ render(c, null, false); }));
+  });
+
+
+  // ====== Carrito (drawer) ======
+  const drawer = document.getElementById('cartDrawer');
+  const backdrop = document.getElementById('backdrop');
+  const closeCartBtn = document.getElementById('closeCart');
+  const goCheckout = document.getElementById('goCheckout');
+  document.querySelectorAll('.ic').forEach(el=>{
+    if(el.textContent.includes('Carrito')) el.addEventListener('click', openCart);
+  });
+  backdrop.addEventListener('click', closeCart);
+  closeCartBtn.addEventListener('click', closeCart);
+
+  function openCart(){
+    renderCart();
+    drawer.style.transform='translateX(0)';
+    backdrop.style.opacity='1';
+    backdrop.style.pointerEvents='auto';
+  }
+  function closeCart(){
+    drawer.style.transform='translateX(100%)';
+    backdrop.style.opacity='0';
+    backdrop.style.pointerEvents='none';
+  }
+
+  function renderCart(){
+    const wrap = document.getElementById('cartItems');
+    const items = Object.entries(cart).map(([sku,qty])=>{
+      const p = products.find(x=>x.sku===sku); if(!p) return null; return {sku,qty,name:p.name,price:p.price};
+    }).filter(Boolean);
+    if(!items.length){
+      wrap.innerHTML = `<p class="sub">Tu carrito está vacío.</p>`;
+      document.getElementById('cartSubtotal').textContent = money(0);
+      return;
+    }
+    wrap.innerHTML = items.map(i=>`<div style="display:grid;grid-template-columns:1fr auto;gap:10px;border-bottom:1px solid var(--hair);padding:8px 0">
+      <div><strong>${i.name}</strong><br><small>${i.sku}</small></div>
+      <div style="text-align:right">
+        <div>${money(i.price*i.qty)}</div>
+        <div style="display:inline-flex;gap:6px;align-items:center;">
+          <button class="btn secondary" data-act="dec" data-sku="${i.sku}">-</button>
+          <span>${i.qty}</span>
+          <button class="btn secondary" data-act="inc" data-sku="${i.sku}">+</button>
+          <button class="btn secondary" data-act="rm" data-sku="${i.sku}">✕</button>
+        </div>
+      </div>
+    </div>`).join('');
+    const subtotal = items.reduce((s,i)=>s+i.price*i.qty,0);
+    document.getElementById('cartSubtotal').textContent = money(subtotal);
+    wrap.querySelectorAll('button').forEach(b=>b.addEventListener('click', e=>{
+      const sku = e.target.dataset.sku; const act = e.target.dataset.act;
+      if(act==='inc') cart[sku] = (cart[sku]||0)+1;
+      if(act==='dec') cart[sku] = Math.max(0,(cart[sku]||0)-1);
+      if(act==='rm') delete cart[sku];
+      if(cart[sku]===0) delete cart[sku];
+      saveCart(); renderCart();
+    }));
+  }
+
+  // ====== Checkout (simulado) ======
+  const checkout = document.getElementById('checkout');
+  
+  goCheckout.addEventListener('click', ()=>{ 
+    if(isCartEmpty()){
+      alert('Tu carrito está vacío. Añade productos antes de continuar.');
+      return;
+    }
+    closeCart(); 
+    openCheckout(); 
+  });
+  
+  document.getElementById('closeCheckout').addEventListener('click', ()=>{
+    checkout.close();
+  });
+  
+  function openCheckout(){
+    if(isCartEmpty()){
+      alert('Tu carrito está vacío. Añade productos antes de continuar.');
+      return;
+    }
+    renderSummary();
+    checkout.showModal();
+  }
+  
+  function renderSummary(){
+    const box = document.getElementById('summary');
+    const items = Object.entries(cart).map(([sku,qty])=>{
+      const p = products.find(x=>x.sku===sku); if(!p) return null; return {sku,qty,name:p.name,price:p.price};
+    }).filter(Boolean);
+    if(!items.length){ 
+      box.innerHTML = '<p class="sub">No hay productos en el carrito.</p>'; 
+      document.getElementById('sumTotal').textContent = money(0);
+      return; 
+    }
+    box.innerHTML = items.map(i=>`<div style=\"display:flex;justify-content:space-between;gap:10px;margin:0 0 12px;padding-bottom:12px;border-bottom:1px solid var(--hair)\"><span style=\"font-size:14px;color:var(--muted)\">${i.qty}× ${i.name}</span><span style=\"font-weight:700;font-size:14px\">${money(i.price*i.qty)}</span></div>`).join('');
+    const total = items.reduce((s,i)=>s+i.price*i.qty,0);
+    document.getElementById('sumTotal').textContent = money(total);
+  }
+
+  // Método de pago alterna campos
+  document.getElementById('checkoutForm').metodo.forEach(r=>r.addEventListener('change', (e)=>{
+    document.getElementById('cardFields').style.display = e.target.value==='card' ? 'grid' : 'none';
+  }));
+
+  document.getElementById('payBtn').addEventListener('click', (e)=>{
+    e.preventDefault();
+    
+    // Validate cart is not empty
+    if(isCartEmpty()){
+      showError('❌ Tu carrito está vacío. Añade productos antes de pagar.');
+      checkout.close();
+      return;
+    }
+    
+    const form = document.getElementById('checkoutForm');
+    
+    // Validate all required fields
+    if(!form.reportValidity()) {
+      showError('❌ Por favor completa todos los campos requeridos correctamente.');
+      return;
+    }
+    
+    // Additional validation for specific fields
+    const telefono = form.telefono.value;
+    const cp = form.cp.value;
+    
+    if(telefono && !/^[0-9]{10}$/.test(telefono)){
+      showError('❌ El número de WhatsApp debe tener 10 dígitos.');
+      form.telefono.focus();
+      return;
+    }
+    
+    if(cp && !/^[0-9]{5}$/.test(cp)){
+      showError('❌ El código postal debe tener 5 dígitos.');
+      form.cp.focus();
+      return;
+    }
+    
+    const msg = document.getElementById('chkMsg');
+    msg.textContent = 'Procesando pago…';
+    msg.style.color = 'var(--muted)';
+    
+    // Disable pay button during processing
+    const payBtn = document.getElementById('payBtn');
+    payBtn.disabled = true;
+    payBtn.style.opacity = '0.6';
+    payBtn.style.cursor = 'not-allowed';
+    
+    setTimeout(()=>{
+      const order = 'ORD-' + Math.random().toString(36).slice(2,8).toUpperCase();
+      msg.innerHTML = `✔️ Pago aprobado. Número de pedido <strong>${order}</strong>. Te enviamos confirmación por correo.`;
+      msg.style.color = '#10b981';
+      cart = {}; 
+      saveCart(); 
+      renderSummary(); 
+      refreshCartIcon();
+      
+      // Re-enable button
+      payBtn.disabled = false;
+      payBtn.style.opacity = '1';
+      payBtn.style.cursor = 'pointer';
+      
+      // Close modal after 3 seconds
+      setTimeout(() => {
+        checkout.close();
+        msg.textContent = '';
+      }, 3000);
+    }, 1200);
+  });
+
+  // Enlaces del footer por categoría navegan y renderizan
+  document.querySelectorAll('[data-cat]').forEach(a=>a.addEventListener('click', (e)=>{
+    const cat = e.target.dataset.cat; render(cat, null, false); }));
+})();
+</script>
+</body>
+</html>
